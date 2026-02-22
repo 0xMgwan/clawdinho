@@ -30,42 +30,63 @@ RUN mkdir -p /app/.openclaw/logs
 ENV NODE_ENV=production
 ENV OPENCLAW_CONFIG_PATH=/app/.openclaw/openclaw.json
 
-# Create simple Node.js health server
-RUN echo 'const http = require("http");\n\
+# Create startup script that runs both health server and OpenClaw
+RUN echo '#!/bin/bash\n\
+set -e\n\
+\n\
+echo "=== OpenClaw Railway Deployment Starting ==="\n\
+echo "Container starting at $(date)"\n\
+echo "Environment check:"\n\
+echo "OPENAI_API_KEY present: $(if [ -n "$OPENAI_API_KEY" ]; then echo "YES"; else echo "NO"; fi)"\n\
+echo "TELEGRAM_BOT_TOKEN present: $(if [ -n "$TELEGRAM_BOT_TOKEN" ]; then echo "YES"; else echo "NO"; fi)"\n\
+echo "BANKR_API_KEY present: $(if [ -n "$BANKR_API_KEY" ]; then echo "YES"; else echo "NO"; fi)"\n\
+echo "PORT: ${PORT:-8080}"\n\
+\n\
+# Create necessary directories\n\
+mkdir -p /data/openclaw /data/workspace\n\
+\n\
+# Start health server in background\n\
+echo "Starting health server on port ${PORT:-8080}..."\n\
+node -e "\n\
+const http = require(\"http\");\n\
 const port = process.env.PORT || 8080;\n\
 \n\
-console.log(`Container starting at ${new Date()}`);\n\
-console.log("Environment check:");\n\
-console.log(`OPENAI_API_KEY present: ${process.env.OPENAI_API_KEY ? "YES" : "NO"}`);\n\
-console.log(`TELEGRAM_BOT_TOKEN present: ${process.env.TELEGRAM_BOT_TOKEN ? "YES" : "NO"}`);\n\
-console.log(`BANKR_API_KEY present: ${process.env.BANKR_API_KEY ? "YES" : "NO"}`);\n\
-console.log(`PORT: ${port}`);\n\
-\n\
 const server = http.createServer((req, res) => {\n\
-  console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);\n\
-  \n\
-  if (req.url === "/health") {\n\
-    res.writeHead(200, { "Content-Type": "application/json" });\n\
-    res.end(JSON.stringify({ status: "healthy", service: "openclaw-container", timestamp: new Date().toISOString() }));\n\
+  if (req.url === \"/health\") {\n\
+    res.writeHead(200, { \"Content-Type\": \"application/json\" });\n\
+    res.end(JSON.stringify({ status: \"healthy\", service: \"openclaw-railway\", timestamp: new Date().toISOString() }));\n\
   } else {\n\
-    res.writeHead(200, { "Content-Type": "text/plain" });\n\
-    res.end("OpenClaw container is running");\n\
+    res.writeHead(200, { \"Content-Type\": \"text/plain\" });\n\
+    res.end(\"OpenClaw Railway Container\");\n\
   }\n\
 });\n\
 \n\
-server.listen(port, "0.0.0.0", () => {\n\
-  console.log(`Health server running on 0.0.0.0:${port}`);\n\
-  console.log(`Health endpoint: http://0.0.0.0:${port}/health`);\n\
+server.listen(port, \"0.0.0.0\", () => {\n\
+  console.log(\`Health server running on 0.0.0.0:\${port}\`);\n\
 });\n\
+" &\n\
 \n\
-server.on("error", (err) => {\n\
-  console.error("Server error:", err);\n\
-  process.exit(1);\n\
-});' > /app/health-server.js
+# Wait for health server to start\n\
+sleep 3\n\
+\n\
+# Test health endpoint\n\
+echo "Testing health endpoint..."\n\
+curl -f http://localhost:${PORT:-8080}/health && echo "✅ Health check working"\n\
+\n\
+# Start OpenClaw gateway\n\
+echo "Starting OpenClaw gateway..."\n\
+export OPENCLAW_CONFIG_PATH=/app/.openclaw/openclaw.json\n\
+export OPENCLAW_STATE_DIR=/data/openclaw\n\
+export OPENCLAW_WORKSPACE_DIR=/data/workspace\n\
+\n\
+# Start OpenClaw in foreground\n\
+echo "🦞 Starting OpenClaw Agent for 24/7 operation..."\n\
+npx openclaw gateway start --production --port 18789 --bind 0.0.0.0\n\
+' > /app/start.sh && chmod +x /app/start.sh
 
 # Health check - check our HTTP server on Railway's port
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
   CMD curl -f http://localhost:${PORT:-8080}/health || exit 1
 
-# Start command - run the Node.js health server
-CMD ["node", "/app/health-server.js"]
+# Start command - run the startup script
+CMD ["/app/start.sh"]
