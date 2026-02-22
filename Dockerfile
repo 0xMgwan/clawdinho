@@ -46,15 +46,15 @@ echo "PORT: ${PORT:-8080}"\n\
 mkdir -p /data/openclaw /data/workspace\n\
 mkdir -p /data/openclaw/agents/main/agent\n\
 \n\
-# Use OpenClaw CLI to add API key for openai-codex provider\n\
-echo "Setting up OpenClaw agent with openai-codex API key..."\n\
-export OPENCLAW_CONFIG_PATH=/app/.openclaw/openclaw.json\n\
-export OPENCLAW_STATE_DIR=/data/openclaw\n\
-export OPENCLAW_WORKSPACE_DIR=/data/workspace\n\
-\n\
-# Run openclaw agents add to configure the API key\n\
-echo "$OPENAI_API_KEY" | npx openclaw agents add main --provider openai-codex --non-interactive || true\n\
-echo "✅ OpenClaw agent configured with openai-codex API key"\n\
+# Option B: Copy auth-profiles.json from base64 environment variable\n\
+if [ -n "$AUTH_PROFILES_BASE64" ]; then\n\
+  echo "Copying auth-profiles.json from AUTH_PROFILES_BASE64 environment variable..."\n\
+  echo "$AUTH_PROFILES_BASE64" | base64 -d > /data/openclaw/agents/main/agent/auth-profiles.json\n\
+  echo "✅ auth-profiles.json created from environment variable"\n\
+else\n\
+  echo "⚠️  AUTH_PROFILES_BASE64 not set - OpenClaw will fail to authenticate"\n\
+  echo "   Set this environment variable on Railway with the base64-encoded auth-profiles.json"\n\
+fi\n\
 \n\
 # Start health server in background\n\
 echo "Starting health server on port ${PORT:-8080}..."\n\
