@@ -7,6 +7,7 @@ RUN apt-get update && apt-get install -y \
     git \
     build-essential \
     python3 \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy package files
@@ -41,12 +42,16 @@ echo "BANKR_API_KEY present: $(if [ -n "$BANKR_API_KEY" ]; then echo "YES"; else
 mkdir -p /data/openclaw /data/workspace\n\
 \n\
 # Start simple HTTP server for health checks on Railway's expected port\n\
-echo "Starting HTTP server on port $PORT (Railway port)..."\n\
+PORT=${PORT:-8080}\n\
+echo "Starting HTTP server on 0.0.0.0:$PORT (Railway port)..."\n\
 python3 -c "\n\
 import http.server\n\
 import socketserver\n\
 import os\n\
-\nclass HealthHandler(http.server.SimpleHTTPRequestHandler):\n\
+import threading\n\
+import time\n\
+\n\
+class HealthHandler(http.server.SimpleHTTPRequestHandler):\n\
     def do_GET(self):\n\
         if self.path == \"/health\":\n\
             self.send_response(200)\n\
@@ -59,11 +64,31 @@ import os\n\
             self.end_headers()\n\
             self.wfile.write(b\"OpenClaw container is running\")\n\
     \n\
+    def log_message(self, format, *args):\n\
+        print(f\"Health check: {format % args}\")\n\
+\n\
 PORT = int(os.environ.get(\"PORT\", 8080))\n\
-with socketserver.TCPServer((\"\", PORT), HealthHandler) as httpd:\n\
-    print(f\"Health server running on port {PORT}\")\n\
-    httpd.serve_forever()\n\
-"' > /app/start.sh && chmod +x /app/start.sh
+print(f\"Binding health server to 0.0.0.0:{PORT}\")\n\
+try:\n\
+    with socketserver.TCPServer((\"0.0.0.0\", PORT), HealthHandler) as httpd:\n\
+        print(f\"Health server successfully started on 0.0.0.0:{PORT}\")\n\
+        httpd.serve_forever()\n\
+except Exception as e:\n\
+    print(f\"Failed to start health server: {e}\")\n\
+    import traceback\n\
+    traceback.print_exc()\n\
+" &\n\
+\n\
+# Give the server time to start\n\
+sleep 2\n\
+\n\
+# Test if server is responding\n\
+echo "Testing health endpoint..."\n\
+curl -f http://localhost:$PORT/health || echo "Health endpoint not responding yet"\n\
+\n\
+# Keep container alive\n\
+echo "Container ready - health server running in background"\n\
+tail -f /dev/null' > /app/start.sh && chmod +x /app/start.sh
 
 # Health check - check our HTTP server on Railway's port
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
