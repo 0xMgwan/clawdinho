@@ -79,7 +79,12 @@
     "install": {
       "nodeManager": "npm"
     },
-    "entries": {}
+    "entries": {
+      "bankr": {
+        "enabled": true,
+        "path": ".openclaw/skills/bankr/bankr"
+      }
+    }
   },
   "plugins": {
     "entries": {
