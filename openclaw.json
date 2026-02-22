@@ -1,26 +1,36 @@
 {
   "meta": {
-    "lastTouchedVersion": "2026.2.3-1",
-    "lastTouchedAt": "2026-02-22T14:23:34.120Z"
+    "lastTouchedVersion": "2026.2.17",
+    "lastTouchedAt": "2026-02-22T17:56:04.869Z"
+  },
+  "wizard": {
+    "lastRunAt": "2026-02-22T17:56:04.737Z",
+    "lastRunVersion": "2026.2.17",
+    "lastRunCommand": "configure",
+    "lastRunMode": "remote"
   },
   "auth": {
     "profiles": {
-      "openai:default": {
-        "provider": "openai",
+      "anthropic:default": {
+        "provider": "anthropic",
         "mode": "api_key"
+      },
+      "openai-codex:default": {
+        "provider": "openai-codex",
+        "mode": "oauth"
       }
     }
   },
   "agents": {
     "defaults": {
       "model": {
-        "fallbacks": [],
-        "primary": "openai-codex/gpt-5.2"
+        "primary": "openai-codex/gpt-5.2",
+        "fallbacks": []
       },
       "models": {
         "openai-codex/gpt-5.2": {}
       },
-      "workspace": "/app/.openclaw/workspace",
+      "workspace": "/Users/macbookpro/.openclaw/workspace",
       "maxConcurrent": 4,
       "subagents": {
         "maxConcurrent": 8
@@ -31,16 +41,49 @@
     "elevated": {
       "enabled": true,
       "allowFrom": {
-        "telegram": ["*"]
+        "whatsapp": [
+          "+255786630875"
+        ]
+      }
+    }
+  },
+  "messages": {
+    "ackReactionScope": "group-mentions"
+  },
+  "commands": {
+    "native": "auto",
+    "nativeSkills": "auto"
+  },
+  "cron": {
+    "enabled": true
+  },
+  "hooks": {
+    "internal": {
+      "enabled": true,
+      "entries": {
+        "boot-md": {
+          "enabled": true
+        }
       }
     }
   },
   "channels": {
+    "whatsapp": {
+      "dmPolicy": "allowlist",
+      "selfChatMode": true,
+      "allowFrom": [
+        "+255786630875"
+      ],
+      "groupPolicy": "allowlist",
+      "debounceMs": 0,
+      "mediaMaxMb": 50
+    },
     "telegram": {
       "enabled": true,
       "dmPolicy": "allowlist",
       "botToken": "8559985924:AAFYs8dflkhJ99HwJrps2vZms33y2kEj71A",
       "allowFrom": [
+        "*",
         "6330549787"
       ],
       "groupPolicy": "allowlist",
@@ -50,7 +93,28 @@
   "gateway": {
     "mode": "remote",
     "auth": {
+      "mode": "token",
       "token": "d2a993108999011cb5305fec263b5d67bec6a736f27c58ac"
+    },
+    "remote": {
+      "url": "ws://127.0.0.1:18789",
+      "token": "d2a993108999011cb5305fec263b5d67bec6a736f27c58ac"
+    }
+  },
+  "skills": {
+    "install": {
+      "nodeManager": "npm"
+    },
+    "entries": {}
+  },
+  "plugins": {
+    "entries": {
+      "whatsapp": {
+        "enabled": true
+      },
+      "telegram": {
+        "enabled": true
+      }
     }
   }
 }
