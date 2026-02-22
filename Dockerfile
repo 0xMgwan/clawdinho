@@ -8,14 +8,14 @@ COPY package*.json ./
 # Install dependencies
 RUN npm install
 
-# Copy OpenClaw config
-COPY .openclaw/ ./.openclaw/
+# Copy OpenClaw config and workspace
+COPY openclaw.json ./.openclaw/openclaw.json
+COPY .openclaw-workspace/ ./.openclaw/workspace/
 
 # Copy any additional files
 COPY . .
 
 # Create necessary directories
-RUN mkdir -p /app/.openclaw/workspace
 RUN mkdir -p /app/.openclaw/logs
 
 # Set environment
