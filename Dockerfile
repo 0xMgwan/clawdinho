@@ -53,14 +53,14 @@ if [ -n "$OPENAI_API_KEY" ]; then\n\
 {\n\
   "version": 1,\n\
   "profiles": {\n\
-    "openai-codex:default": {\n\
+    "openai:default": {\n\
       "type": "api_key",\n\
-      "provider": "openai-codex",\n\
+      "provider": "openai",\n\
       "key": "$OPENAI_API_KEY"\n\
     }\n\
   },\n\
   "lastGood": {\n\
-    "openai-codex": "openai-codex:default"\n\
+    "openai": "openai:default"\n\
   }\n\
 }\n\
 EOF\n\
