@@ -52,6 +52,11 @@ if [ -n "$AUTH_PROFILES_BASE64" ]; then\n\
   if [ -f /data/openclaw/agents/main/agent/auth-profiles.json ]; then\n\
     echo "✅ auth-profiles.json created successfully"\n\
     ls -lh /data/openclaw/agents/main/agent/auth-profiles.json\n\
+    echo "📄 File contents (first 500 chars):"\n\
+    head -c 500 /data/openclaw/agents/main/agent/auth-profiles.json\n\
+    echo ""\n\
+    echo "🔍 Checking JSON validity:"\n\
+    cat /data/openclaw/agents/main/agent/auth-profiles.json | node -e "try { JSON.parse(require(\"fs\").readFileSync(0, \"utf-8\")); console.log(\"✅ Valid JSON\"); } catch(e) { console.log(\"❌ Invalid JSON:\", e.message); }"\n\
   else\n\
     echo "❌ Failed to create auth-profiles.json"\n\
   fi\n\
