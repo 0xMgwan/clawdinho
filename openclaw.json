@@ -41,9 +41,7 @@
     "elevated": {
       "enabled": true,
       "allowFrom": {
-        "whatsapp": [
-          "+255786630875"
-        ]
+        "telegram": ["*"]
       }
     }
   },
@@ -68,22 +66,11 @@
     }
   },
   "channels": {
-    "whatsapp": {
-      "dmPolicy": "allowlist",
-      "selfChatMode": true,
-      "allowFrom": [
-        "+255786630875"
-      ],
-      "groupPolicy": "allowlist",
-      "debounceMs": 0,
-      "mediaMaxMb": 50
-    },
     "telegram": {
       "enabled": true,
       "dmPolicy": "allowlist",
       "botToken": "8559985924:AAFYs8dflkhJ99HwJrps2vZms33y2kEj71A",
       "allowFrom": [
-        "*",
         "6330549787"
       ],
       "groupPolicy": "allowlist",
@@ -109,9 +96,6 @@
   },
   "plugins": {
     "entries": {
-      "whatsapp": {
-        "enabled": true
-      },
       "telegram": {
         "enabled": true
       }
