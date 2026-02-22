@@ -44,18 +44,18 @@ echo "PORT: ${PORT:-8080}"\n\
 \n\
 # Create necessary directories\n\
 mkdir -p /data/openclaw /data/workspace\n\
+mkdir -p /data/openclaw/agents/main/agent\n\
 \n\
-# Create auth-profiles.json with OpenAI API key for openai-codex\n\
-echo "Creating auth-profiles.json for openai-codex..."\n\
-mkdir -p /app/.openclaw\n\
-cat > /app/.openclaw/auth-profiles.json << EOF\n\
+# Create auth-profiles.json in the correct location for OpenClaw\n\
+echo "Creating auth-profiles.json for openai-codex in agent directory..."\n\
+cat > /data/openclaw/agents/main/agent/auth-profiles.json << EOF\n\
 {\n\
   "openai-codex:default": {\n\
     "api_key": "$OPENAI_API_KEY"\n\
   }\n\
 }\n\
 EOF\n\
-echo "✅ auth-profiles.json created"\n\
+echo "✅ auth-profiles.json created at /data/openclaw/agents/main/agent/auth-profiles.json"\n\
 \n\
 # Start health server in background\n\
 echo "Starting health server on port ${PORT:-8080}..."\n\
