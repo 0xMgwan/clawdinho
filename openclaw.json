@@ -68,13 +68,11 @@
     }
   },
   "gateway": {
-    "mode": "remote",
+    "port": 18789,
+    "mode": "local",
+    "bind": "0.0.0.0",
     "auth": {
       "mode": "token",
-      "token": "d2a993108999011cb5305fec263b5d67bec6a736f27c58ac"
-    },
-    "remote": {
-      "url": "ws://127.0.0.1:18789",
       "token": "d2a993108999011cb5305fec263b5d67bec6a736f27c58ac"
     }
   },
