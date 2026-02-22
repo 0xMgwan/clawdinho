@@ -8,6 +8,10 @@
       "openai:default": {
         "provider": "openai",
         "mode": "api_key"
+      },
+      "openai-codex:default": {
+        "provider": "openai-codex",
+        "mode": "api_key"
       }
     }
   },
@@ -15,10 +19,10 @@
     "defaults": {
       "model": {
         "fallbacks": [],
-        "primary": "openai/gpt-4o"
+        "primary": "openai-codex/gpt-5.2"
       },
       "models": {
-        "openai/gpt-4o": {}
+        "openai-codex/gpt-5.2": {}
       },
       "workspace": "/Users/macbookpro/.openclaw/workspace",
       "maxConcurrent": 4,
