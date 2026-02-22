@@ -14,11 +14,11 @@
   "agents": {
     "defaults": {
       "model": {
-        "primary": "openai-codex/gpt-5.2",
-        "fallbacks": []
+        "fallbacks": [],
+        "primary": "openai/gpt-4o"
       },
       "models": {
-        "openai-codex/gpt-5.2": {}
+        "openai/gpt-4o": {}
       },
       "workspace": "/Users/macbookpro/.openclaw/workspace",
       "maxConcurrent": 4,
