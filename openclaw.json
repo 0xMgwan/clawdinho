@@ -81,8 +81,7 @@
     },
     "entries": {
       "bankr": {
-        "enabled": true,
-        "path": ".openclaw/skills/bankr/bankr"
+        "enabled": true
       }
     }
   },
