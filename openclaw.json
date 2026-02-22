@@ -63,7 +63,7 @@
     "mode": "production",
     "bind": "0.0.0.0",
     "auth": {
-      "token": "auto-generated-token"
+      "token": "d2a993108999011cb5305fec263b5d67bec6a736f27c58ac"
     }
   }
 }
