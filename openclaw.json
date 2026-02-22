@@ -1,13 +1,7 @@
 {
   "meta": {
-    "lastTouchedVersion": "2026.2.17",
-    "lastTouchedAt": "2026-02-22T17:56:04.869Z"
-  },
-  "wizard": {
-    "lastRunAt": "2026-02-22T17:56:04.737Z",
-    "lastRunVersion": "2026.2.17",
-    "lastRunCommand": "configure",
-    "lastRunMode": "remote"
+    "lastTouchedVersion": "2026.2.3-1",
+    "lastTouchedAt": "2026-02-22T18:41:00.000Z"
   },
   "auth": {
     "profiles": {

@@ -79,9 +79,11 @@ export OPENCLAW_CONFIG_PATH=/app/.openclaw/openclaw.json\n\
 export OPENCLAW_STATE_DIR=/data/openclaw\n\
 export OPENCLAW_WORKSPACE_DIR=/data/workspace\n\
 \n\
-# Start OpenClaw in foreground\n\
+# Start OpenClaw gateway directly without service management\n\
 echo "🦞 Starting OpenClaw Agent for 24/7 operation..."\n\
-npx openclaw gateway start --port 18789 --bind 0.0.0.0\n\
+echo "Using direct gateway startup (no systemd services in container)"\n\
+cd /app\n\
+npx openclaw gateway --port 18789 --bind 0.0.0.0 --no-service\n\
 ' > /app/start.sh && chmod +x /app/start.sh
 
 # Health check - check our HTTP server on Railway's port
