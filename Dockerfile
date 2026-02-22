@@ -46,26 +46,31 @@ mkdir -p /data/openclaw /data/workspace\n\
 mkdir -p /data/openclaw/agents/main/agent\n\
 mkdir -p /root/.openclaw/agents/main/agent\n\
 \n\
-# Copy auth-profiles.json from base64 environment variable to multiple locations\n\
-if [ -n "$AUTH_PROFILES_BASE64" ]; then\n\
-  echo "✅ AUTH_PROFILES_BASE64 is set, creating auth-profiles.json..."\n\
-  echo "$AUTH_PROFILES_BASE64" | base64 -d > /data/openclaw/agents/main/agent/auth-profiles.json 2>&1\n\
-  echo "$AUTH_PROFILES_BASE64" | base64 -d > /root/.openclaw/agents/main/agent/auth-profiles.json 2>&1\n\
-  if [ -f /data/openclaw/agents/main/agent/auth-profiles.json ]; then\n\
-    echo "✅ auth-profiles.json created in /data/openclaw/agents/main/agent/"\n\
-    ls -lh /data/openclaw/agents/main/agent/auth-profiles.json\n\
-  fi\n\
-  if [ -f /root/.openclaw/agents/main/agent/auth-profiles.json ]; then\n\
-    echo "✅ auth-profiles.json created in /root/.openclaw/agents/main/agent/"\n\
-    ls -lh /root/.openclaw/agents/main/agent/auth-profiles.json\n\
-  fi\n\
-  echo "📄 File contents (first 500 chars):"\n\
-  head -c 500 /data/openclaw/agents/main/agent/auth-profiles.json\n\
-  echo ""\n\
+# Create auth-profiles.json with API key from environment variable\n\
+if [ -n "$OPENAI_API_KEY" ]; then\n\
+  echo "✅ Creating auth-profiles.json with OPENAI_API_KEY..."\n\
+  cat > /data/openclaw/agents/main/agent/auth-profiles.json <<EOF\n\
+{\n\
+  "version": 1,\n\
+  "profiles": {\n\
+    "openai-codex:default": {\n\
+      "type": "api_key",\n\
+      "provider": "openai-codex",\n\
+      "key": "$OPENAI_API_KEY"\n\
+    }\n\
+  },\n\
+  "lastGood": {\n\
+    "openai-codex": "openai-codex:default"\n\
+  }\n\
+}\n\
+EOF\n\
+  cp /data/openclaw/agents/main/agent/auth-profiles.json /root/.openclaw/agents/main/agent/auth-profiles.json\n\
+  echo "✅ auth-profiles.json created in both locations"\n\
+  ls -lh /data/openclaw/agents/main/agent/auth-profiles.json\n\
   echo "🔍 Checking JSON validity:"\n\
   cat /data/openclaw/agents/main/agent/auth-profiles.json | node -e "try { JSON.parse(require(\"fs\").readFileSync(0, \"utf-8\")); console.log(\"✅ Valid JSON\"); } catch(e) { console.log(\"❌ Invalid JSON:\", e.message); }"\n\
 else\n\
-  echo "❌ AUTH_PROFILES_BASE64 not set - OpenClaw will fail to authenticate"\n\
+  echo "❌ OPENAI_API_KEY not set - OpenClaw will fail to authenticate"\n\
 fi\n\
 \n\
 # Start health server in background\n\
