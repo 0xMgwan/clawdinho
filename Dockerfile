@@ -29,20 +29,27 @@ RUN mkdir -p /app/.openclaw/logs
 ENV NODE_ENV=production
 ENV OPENCLAW_CONFIG_PATH=/app/.openclaw/openclaw.json
 
-# Create startup script that handles missing auth gracefully
+# Create startup script with better error handling
 RUN echo '#!/bin/bash\n\
+echo "Starting OpenClaw deployment..."\n\
+\n\
 # Create required directories\n\
 mkdir -p /data/openclaw /data/workspace\n\
 \n\
-# Start OpenClaw gateway with error handling\n\
-if ! npm start; then\n\
-  echo "OpenClaw failed to start, keeping container alive for debugging"\n\
-  tail -f /dev/null\n\
-fi' > /app/start.sh && chmod +x /app/start.sh
+# Wait a moment for environment to stabilize\n\
+sleep 5\n\
+\n\
+# Try to start OpenClaw\n\
+echo "Attempting to start OpenClaw gateway..."\n\
+npm start 2>&1 | tee /app/openclaw.log &\n\
+\n\
+# Keep container alive\n\
+echo "Container started. OpenClaw logs in /app/openclaw.log"\n\
+tail -f /app/openclaw.log' > /app/start.sh && chmod +x /app/start.sh
 
-# Health check - just check if container is running
-HEALTHCHECK --interval=30s --timeout=10s --start-period=120s --retries=10 \
-  CMD ps aux | grep -v grep | grep -q node || exit 1
+# Health check - check if Node.js process is running
+HEALTHCHECK --interval=30s --timeout=10s --start-period=180s --retries=15 \
+  CMD pgrep -f "node" > /dev/null || exit 1
 
 # Start command
 CMD ["/app/start.sh"]
