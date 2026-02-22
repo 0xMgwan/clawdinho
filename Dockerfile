@@ -81,7 +81,7 @@ export OPENCLAW_WORKSPACE_DIR=/data/workspace\n\
 \n\
 # Start OpenClaw in foreground\n\
 echo "🦞 Starting OpenClaw Agent for 24/7 operation..."\n\
-npx openclaw gateway start --production --port 18789 --bind 0.0.0.0\n\
+npx openclaw gateway start --port 18789 --bind 0.0.0.0\n\
 ' > /app/start.sh && chmod +x /app/start.sh
 
 # Health check - check our HTTP server on Railway's port
