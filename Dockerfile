@@ -44,22 +44,26 @@ echo "PORT: ${PORT:-8080}"\n\
 # Create necessary directories\n\
 mkdir -p /data/openclaw /data/workspace\n\
 mkdir -p /data/openclaw/agents/main/agent\n\
+mkdir -p /root/.openclaw/agents/main/agent\n\
 \n\
-# Option B: Copy auth-profiles.json from base64 environment variable\n\
+# Copy auth-profiles.json from base64 environment variable to multiple locations\n\
 if [ -n "$AUTH_PROFILES_BASE64" ]; then\n\
   echo "✅ AUTH_PROFILES_BASE64 is set, creating auth-profiles.json..."\n\
   echo "$AUTH_PROFILES_BASE64" | base64 -d > /data/openclaw/agents/main/agent/auth-profiles.json 2>&1\n\
+  echo "$AUTH_PROFILES_BASE64" | base64 -d > /root/.openclaw/agents/main/agent/auth-profiles.json 2>&1\n\
   if [ -f /data/openclaw/agents/main/agent/auth-profiles.json ]; then\n\
-    echo "✅ auth-profiles.json created successfully"\n\
+    echo "✅ auth-profiles.json created in /data/openclaw/agents/main/agent/"\n\
     ls -lh /data/openclaw/agents/main/agent/auth-profiles.json\n\
-    echo "📄 File contents (first 500 chars):"\n\
-    head -c 500 /data/openclaw/agents/main/agent/auth-profiles.json\n\
-    echo ""\n\
-    echo "🔍 Checking JSON validity:"\n\
-    cat /data/openclaw/agents/main/agent/auth-profiles.json | node -e "try { JSON.parse(require(\"fs\").readFileSync(0, \"utf-8\")); console.log(\"✅ Valid JSON\"); } catch(e) { console.log(\"❌ Invalid JSON:\", e.message); }"\n\
-  else\n\
-    echo "❌ Failed to create auth-profiles.json"\n\
   fi\n\
+  if [ -f /root/.openclaw/agents/main/agent/auth-profiles.json ]; then\n\
+    echo "✅ auth-profiles.json created in /root/.openclaw/agents/main/agent/"\n\
+    ls -lh /root/.openclaw/agents/main/agent/auth-profiles.json\n\
+  fi\n\
+  echo "📄 File contents (first 500 chars):"\n\
+  head -c 500 /data/openclaw/agents/main/agent/auth-profiles.json\n\
+  echo ""\n\
+  echo "🔍 Checking JSON validity:"\n\
+  cat /data/openclaw/agents/main/agent/auth-profiles.json | node -e "try { JSON.parse(require(\"fs\").readFileSync(0, \"utf-8\")); console.log(\"✅ Valid JSON\"); } catch(e) { console.log(\"❌ Invalid JSON:\", e.message); }"\n\
 else\n\
   echo "❌ AUTH_PROFILES_BASE64 not set - OpenClaw will fail to authenticate"\n\
 fi\n\
