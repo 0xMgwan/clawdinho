@@ -1,0 +1,17 @@
+{
+  "name": "openclaw-agent",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "npx openclaw gateway start --production",
+    "dev": "npx openclaw gateway start",
+    "postinstall": "npx openclaw doctor --fix"
+  },
+  "dependencies": {
+    "@bankr/cli": "^0.1.0-beta.6",
+    "openclaw": "^2026.2.3-1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
