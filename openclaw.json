@@ -31,22 +31,11 @@
     "elevated": {
       "enabled": true,
       "allowFrom": {
-        "whatsapp": ["*"],
         "telegram": ["*"]
       }
     }
   },
   "channels": {
-    "whatsapp": {
-      "dmPolicy": "allowlist",
-      "selfChatMode": true,
-      "allowFrom": [
-        "+255786630875"
-      ],
-      "groupPolicy": "allowlist",
-      "mediaMaxMb": 50,
-      "debounceMs": 0
-    },
     "telegram": {
       "enabled": true,
       "dmPolicy": "allowlist",
