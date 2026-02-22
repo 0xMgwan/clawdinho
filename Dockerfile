@@ -47,12 +47,16 @@ mkdir -p /data/openclaw/agents/main/agent\n\
 \n\
 # Option B: Copy auth-profiles.json from base64 environment variable\n\
 if [ -n "$AUTH_PROFILES_BASE64" ]; then\n\
-  echo "Copying auth-profiles.json from AUTH_PROFILES_BASE64 environment variable..."\n\
-  echo "$AUTH_PROFILES_BASE64" | base64 -d > /data/openclaw/agents/main/agent/auth-profiles.json\n\
-  echo "✅ auth-profiles.json created from environment variable"\n\
+  echo "✅ AUTH_PROFILES_BASE64 is set, creating auth-profiles.json..."\n\
+  echo "$AUTH_PROFILES_BASE64" | base64 -d > /data/openclaw/agents/main/agent/auth-profiles.json 2>&1\n\
+  if [ -f /data/openclaw/agents/main/agent/auth-profiles.json ]; then\n\
+    echo "✅ auth-profiles.json created successfully"\n\
+    ls -lh /data/openclaw/agents/main/agent/auth-profiles.json\n\
+  else\n\
+    echo "❌ Failed to create auth-profiles.json"\n\
+  fi\n\
 else\n\
-  echo "⚠️  AUTH_PROFILES_BASE64 not set - OpenClaw will fail to authenticate"\n\
-  echo "   Set this environment variable on Railway with the base64-encoded auth-profiles.json"\n\
+  echo "❌ AUTH_PROFILES_BASE64 not set - OpenClaw will fail to authenticate"\n\
 fi\n\
 \n\
 # Start health server in background\n\
