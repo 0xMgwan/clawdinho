@@ -32,7 +32,6 @@ ENV OPENCLAW_CONFIG_PATH=/app/.openclaw/openclaw.json
 
 # Create startup script that runs both health server and OpenClaw
 RUN echo '#!/bin/bash\n\
-set -e\n\
 \n\
 echo "=== OpenClaw Railway Deployment Starting ==="\n\
 echo "Container starting at $(date)"\n\
