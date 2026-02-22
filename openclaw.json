@@ -1,14 +1,10 @@
 {
   "meta": {
     "lastTouchedVersion": "2026.2.3-1",
-    "lastTouchedAt": "2026-02-22T18:41:00.000Z"
+    "lastTouchedAt": "2026-02-22T19:26:53.749Z"
   },
   "auth": {
     "profiles": {
-      "openai:default": {
-        "provider": "openai",
-        "mode": "api_key"
-      },
       "openai-codex:default": {
         "provider": "openai-codex",
         "mode": "api_key"
@@ -18,13 +14,13 @@
   "agents": {
     "defaults": {
       "model": {
-        "fallbacks": [],
-        "primary": "openai-codex/gpt-5.2"
+        "primary": "openai-codex/gpt-5.2",
+        "fallbacks": []
       },
       "models": {
         "openai-codex/gpt-5.2": {}
       },
-      "workspace": "/Users/macbookpro/.openclaw/workspace",
+      "workspace": "/data/workspace",
       "maxConcurrent": 4,
       "subagents": {
         "maxConcurrent": 8

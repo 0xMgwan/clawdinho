@@ -45,18 +45,17 @@ echo "PORT: ${PORT:-8080}"\n\
 # Create necessary directories\n\
 mkdir -p /data/openclaw /data/workspace\n\
 \n\
-# Create auth-profiles.json with actual API key from environment\n\
-echo "Creating auth-profiles.json with OpenAI API key..."\n\
+# Create auth-profiles.json with OpenAI API key for openai-codex\n\
+echo "Creating auth-profiles.json for openai-codex..."\n\
+mkdir -p /app/.openclaw\n\
 cat > /app/.openclaw/auth-profiles.json << EOF\n\
 {\n\
-  "openai:default": {\n\
-    "api_key": "$OPENAI_API_KEY"\n\
-  },\n\
   "openai-codex:default": {\n\
     "api_key": "$OPENAI_API_KEY"\n\
   }\n\
 }\n\
 EOF\n\
+echo "✅ auth-profiles.json created"\n\
 \n\
 # Start health server in background\n\
 echo "Starting health server on port ${PORT:-8080}..."\n\
