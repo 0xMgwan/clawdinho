@@ -40,33 +40,34 @@ echo "BANKR_API_KEY present: $(if [ -n "$BANKR_API_KEY" ]; then echo "YES"; else
 # Create directories\n\
 mkdir -p /data/openclaw /data/workspace\n\
 \n\
-# Start simple HTTP server for health checks\n\
-echo "Starting HTTP server on port 8080..."\n\
+# Start simple HTTP server for health checks on Railway's expected port\n\
+echo "Starting HTTP server on port $PORT (Railway port)..."\n\
 python3 -c "\n\
 import http.server\n\
 import socketserver\n\
+import os\n\
 \nclass HealthHandler(http.server.SimpleHTTPRequestHandler):\n\
     def do_GET(self):\n\
         if self.path == \"/health\":\n\
             self.send_response(200)\n\
             self.send_header(\"Content-type\", \"application/json\")\n\
             self.end_headers()\n\
-            self.wfile.write(b\"{\\"status\\": \\"healthy\\", \\"service\\": \\"openclaw-container\\", \\"timestamp\\": \\"$(date)\\\"}\")\n\
+            self.wfile.write(b\"{\\"status\\": \\"healthy\\", \\"service\\": \\"openclaw-container\\"}\")\n\
         else:\n\
             self.send_response(200)\n\
             self.send_header(\"Content-type\", \"text/plain\")\n\
             self.end_headers()\n\
             self.wfile.write(b\"OpenClaw container is running\")\n\
     \n\
-PORT = 8080\n\
+PORT = int(os.environ.get(\"PORT\", 8080))\n\
 with socketserver.TCPServer((\"\", PORT), HealthHandler) as httpd:\n\
     print(f\"Health server running on port {PORT}\")\n\
     httpd.serve_forever()\n\
 "' > /app/start.sh && chmod +x /app/start.sh
 
-# Health check - check our HTTP server
+# Health check - check our HTTP server on Railway's port
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
-  CMD curl -f http://localhost:8080/health || exit 1
+  CMD curl -f http://localhost:${PORT:-8080}/health || exit 1
 
 # Start command
 CMD ["/app/start.sh"]
