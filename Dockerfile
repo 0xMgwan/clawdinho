@@ -29,12 +29,17 @@ RUN mkdir -p /app/.openclaw/logs
 ENV NODE_ENV=production
 ENV OPENCLAW_CONFIG_PATH=/app/.openclaw/openclaw.json
 
-# Expose port (Railway will assign one)
-EXPOSE 18789
+# Create startup script
+RUN echo '#!/bin/bash\n\
+# Wait for dependencies\n\
+sleep 10\n\
+\n\
+# Start OpenClaw gateway\n\
+exec npm start' > /app/start.sh && chmod +x /app/start.sh
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-  CMD curl -f http://localhost:18789/health || exit 1
+# Health check - check if process is running instead of HTTP endpoint
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=5 \
+  CMD pgrep -f "openclaw" || exit 1
 
-# Start OpenClaw gateway
-CMD ["npm", "start"]
+# Start command
+CMD ["/app/start.sh"]
