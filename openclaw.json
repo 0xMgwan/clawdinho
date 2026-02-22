@@ -11,13 +11,9 @@
   },
   "auth": {
     "profiles": {
-      "anthropic:default": {
-        "provider": "anthropic",
+      "openai:default": {
+        "provider": "openai",
         "mode": "api_key"
-      },
-      "openai-codex:default": {
-        "provider": "openai-codex",
-        "mode": "oauth"
       }
     }
   },
