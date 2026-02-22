@@ -29,27 +29,30 @@ RUN mkdir -p /app/.openclaw/logs
 ENV NODE_ENV=production
 ENV OPENCLAW_CONFIG_PATH=/app/.openclaw/openclaw.json
 
-# Create startup script with better error handling
+# Create startup script for actual OpenClaw
 RUN echo '#!/bin/bash\n\
-echo "Starting OpenClaw deployment..."\n\
+echo "Starting OpenClaw with environment variables..."\n\
+echo "Checking required variables..."\n\
+\n\
+# Check for required API keys\n\
+if [ -z "$OPENAI_API_KEY" ]; then\n\
+  echo "ERROR: No OpenAI API key found! Need OPENAI_API_KEY"\n\
+  exit 1\n\
+fi\n\
+\n\
+echo "API keys found, starting OpenClaw..."\n\
+echo "Telegram bot token: ${TELEGRAM_BOT_TOKEN:0:10}..."\n\
+echo "Bankr API key: ${BANKR_API_KEY:0:10}..."\n\
 \n\
 # Create required directories\n\
 mkdir -p /data/openclaw /data/workspace\n\
 \n\
-# Wait a moment for environment to stabilize\n\
-sleep 5\n\
-\n\
-# Try to start OpenClaw\n\
-echo "Attempting to start OpenClaw gateway..."\n\
-npm start 2>&1 | tee /app/openclaw.log &\n\
-\n\
-# Keep container alive\n\
-echo "Container started. OpenClaw logs in /app/openclaw.log"\n\
-tail -f /app/openclaw.log' > /app/start.sh && chmod +x /app/start.sh
+# Start OpenClaw\n\
+exec npm start' > /app/start.sh && chmod +x /app/start.sh
 
-# Health check - check if Node.js process is running
-HEALTHCHECK --interval=30s --timeout=10s --start-period=180s --retries=15 \
-  CMD pgrep -f "node" > /dev/null || exit 1
+# Health check - check if OpenClaw gateway is responding
+HEALTHCHECK --interval=30s --timeout=10s --start-period=120s --retries=5 \
+  CMD curl -f http://localhost:18789/health || exit 1
 
 # Start command
 CMD ["/app/start.sh"]
