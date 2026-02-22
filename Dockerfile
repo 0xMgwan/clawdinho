@@ -30,69 +30,42 @@ RUN mkdir -p /app/.openclaw/logs
 ENV NODE_ENV=production
 ENV OPENCLAW_CONFIG_PATH=/app/.openclaw/openclaw.json
 
-# Create startup script that always works
-RUN echo '#!/bin/bash\n\
-echo "Container starting at $(date)"\n\
-echo "Environment check:"\n\
-echo "OPENAI_API_KEY present: $(if [ -n "$OPENAI_API_KEY" ]; then echo "YES"; else echo "NO"; fi)"\n\
-echo "TELEGRAM_BOT_TOKEN present: $(if [ -n "$TELEGRAM_BOT_TOKEN" ]; then echo "YES"; else echo "NO"; fi)"\n\
-echo "BANKR_API_KEY present: $(if [ -n "$BANKR_API_KEY" ]; then echo "YES"; else echo "NO"; fi)"\n\
+# Create simple Node.js health server
+RUN echo 'const http = require("http");\n\
+const port = process.env.PORT || 8080;\n\
 \n\
-# Create directories\n\
-mkdir -p /data/openclaw /data/workspace\n\
+console.log(`Container starting at ${new Date()}`);\n\
+console.log("Environment check:");\n\
+console.log(`OPENAI_API_KEY present: ${process.env.OPENAI_API_KEY ? "YES" : "NO"}`);\n\
+console.log(`TELEGRAM_BOT_TOKEN present: ${process.env.TELEGRAM_BOT_TOKEN ? "YES" : "NO"}`);\n\
+console.log(`BANKR_API_KEY present: ${process.env.BANKR_API_KEY ? "YES" : "NO"}`);\n\
+console.log(`PORT: ${port}`);\n\
 \n\
-# Start simple HTTP server for health checks on Railway's expected port\n\
-PORT=${PORT:-8080}\n\
-echo "Starting HTTP server on 0.0.0.0:$PORT (Railway port)..."\n\
-python3 -c "\n\
-import http.server\n\
-import socketserver\n\
-import os\n\
-import threading\n\
-import time\n\
+const server = http.createServer((req, res) => {\n\
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);\n\
+  \n\
+  if (req.url === "/health") {\n\
+    res.writeHead(200, { "Content-Type": "application/json" });\n\
+    res.end(JSON.stringify({ status: "healthy", service: "openclaw-container", timestamp: new Date().toISOString() }));\n\
+  } else {\n\
+    res.writeHead(200, { "Content-Type": "text/plain" });\n\
+    res.end("OpenClaw container is running");\n\
+  }\n\
+});\n\
 \n\
-class HealthHandler(http.server.SimpleHTTPRequestHandler):\n\
-    def do_GET(self):\n\
-        if self.path == \"/health\":\n\
-            self.send_response(200)\n\
-            self.send_header(\"Content-type\", \"application/json\")\n\
-            self.end_headers()\n\
-            self.wfile.write(b\"{\\"status\\": \\"healthy\\", \\"service\\": \\"openclaw-container\\"}\")\n\
-        else:\n\
-            self.send_response(200)\n\
-            self.send_header(\"Content-type\", \"text/plain\")\n\
-            self.end_headers()\n\
-            self.wfile.write(b\"OpenClaw container is running\")\n\
-    \n\
-    def log_message(self, format, *args):\n\
-        print(f\"Health check: {format % args}\")\n\
+server.listen(port, "0.0.0.0", () => {\n\
+  console.log(`Health server running on 0.0.0.0:${port}`);\n\
+  console.log(`Health endpoint: http://0.0.0.0:${port}/health`);\n\
+});\n\
 \n\
-PORT = int(os.environ.get(\"PORT\", 8080))\n\
-print(f\"Binding health server to 0.0.0.0:{PORT}\")\n\
-try:\n\
-    with socketserver.TCPServer((\"0.0.0.0\", PORT), HealthHandler) as httpd:\n\
-        print(f\"Health server successfully started on 0.0.0.0:{PORT}\")\n\
-        httpd.serve_forever()\n\
-except Exception as e:\n\
-    print(f\"Failed to start health server: {e}\")\n\
-    import traceback\n\
-    traceback.print_exc()\n\
-" &\n\
-\n\
-# Give the server time to start\n\
-sleep 2\n\
-\n\
-# Test if server is responding\n\
-echo "Testing health endpoint..."\n\
-curl -f http://localhost:$PORT/health || echo "Health endpoint not responding yet"\n\
-\n\
-# Keep container alive\n\
-echo "Container ready - health server running in background"\n\
-tail -f /dev/null' > /app/start.sh && chmod +x /app/start.sh
+server.on("error", (err) => {\n\
+  console.error("Server error:", err);\n\
+  process.exit(1);\n\
+});' > /app/health-server.js
 
 # Health check - check our HTTP server on Railway's port
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
   CMD curl -f http://localhost:${PORT:-8080}/health || exit 1
 
-# Start command
-CMD ["/app/start.sh"]
+# Start command - run the Node.js health server
+CMD ["node", "/app/health-server.js"]
