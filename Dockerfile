@@ -46,14 +46,16 @@ echo "PORT: ${PORT:-8080}"\n\
 mkdir -p /data/openclaw /data/workspace\n\
 mkdir -p /data/openclaw/agents/main/agent\n\
 \n\
-# Copy auth-profiles.json if it exists (from local OAuth setup)\n\
-if [ -f /app/.openclaw/auth-profiles.json ]; then\n\
-  echo "Copying auth-profiles.json from local setup..."\n\
-  cp /app/.openclaw/auth-profiles.json /data/openclaw/agents/main/agent/auth-profiles.json\n\
-  echo "✅ auth-profiles.json copied to /data/openclaw/agents/main/agent/"\n\
-else\n\
-  echo "No auth-profiles.json found - OAuth tokens will need to be configured"\n\
-fi\n\
+# Create auth-profiles.json with OpenAI API key for openai-codex\n\
+echo "Creating auth-profiles.json for openai-codex with API key..."\n\
+cat > /data/openclaw/agents/main/agent/auth-profiles.json << EOF\n\
+{\n\
+  "openai-codex:default": {\n\
+    "api_key": "$OPENAI_API_KEY"\n\
+  }\n\
+}\n\
+EOF\n\
+echo "✅ auth-profiles.json created at /data/openclaw/agents/main/agent/auth-profiles.json"\n\
 \n\
 # Start health server in background\n\
 echo "Starting health server on port ${PORT:-8080}..."\n\

@@ -7,7 +7,7 @@
     "profiles": {
       "openai-codex:default": {
         "provider": "openai-codex",
-        "mode": "oauth"
+        "mode": "api_key"
       }
     }
   },
