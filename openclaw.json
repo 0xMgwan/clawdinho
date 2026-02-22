@@ -70,7 +70,6 @@
   "gateway": {
     "port": 18789,
     "mode": "local",
-    "bind": "all",
     "auth": {
       "mode": "token",
       "token": "d2a993108999011cb5305fec263b5d67bec6a736f27c58ac"
