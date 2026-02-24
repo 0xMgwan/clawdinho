@@ -27,14 +27,6 @@
       }
     }
   },
-  "tools": {
-    "elevated": {
-      "enabled": true,
-      "allowFrom": {
-        "telegram": ["*"]
-      }
-    }
-  },
   "messages": {
     "ackReactionScope": "group-mentions"
   },
