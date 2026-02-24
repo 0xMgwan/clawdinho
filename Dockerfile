@@ -16,6 +16,9 @@ COPY package*.json ./
 # Install dependencies
 RUN npm install
 
+# Install Bankr CLI globally
+RUN npm install -g @bankr/cli
+
 # Copy OpenClaw config and workspace
 COPY openclaw.json ./.openclaw/openclaw.json
 COPY .openclaw-workspace/ ./.openclaw/workspace/
@@ -100,6 +103,22 @@ sleep 3\n\
 # Test health endpoint\n\
 echo "Testing health endpoint..."\n\
 curl -f http://localhost:${PORT:-8080}/health && echo "✅ Health check working"\n\
+\n\
+# Configure Bankr CLI with API key from environment\n\
+if [ -n "$BANKR_API_KEY" ]; then\n\
+  echo "✅ Configuring Bankr CLI..."\n\
+  mkdir -p /root/.bankr\n\
+  cat > /root/.bankr/config.json <<EOF\n\
+{\n\
+  "apiKey": "$BANKR_API_KEY",\n\
+  "apiUrl": "https://api.bankr.bot"\n\
+}\n\
+EOF\n\
+  echo "✅ Bankr CLI configured"\n\
+  bankr whoami || echo "⚠️ Bankr authentication check failed"\n\
+else\n\
+  echo "⚠️ BANKR_API_KEY not set - Bankr skills will not work"\n\
+fi\n\
 \n\
 # Start OpenClaw gateway\n\
 echo "Starting OpenClaw gateway..."\n\
