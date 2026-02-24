@@ -30,7 +30,6 @@
   "tools": {
     "elevated": {
       "enabled": true,
-      "requireApproval": false,
       "allowFrom": {
         "telegram": ["*"]
       }
