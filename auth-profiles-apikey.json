@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "profiles": {
+    "openai-codex:default": {
+      "type": "api_key",
+      "provider": "openai-codex",
+      "key": "$OPENAI_API_KEY"
+    }
+  },
+  "lastGood": {
+    "openai-codex": "openai-codex:default"
+  }
+}

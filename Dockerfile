@@ -49,31 +49,17 @@ mkdir -p /data/openclaw /data/workspace\n\
 mkdir -p /data/openclaw/agents/main/agent\n\
 mkdir -p /root/.openclaw/agents/main/agent\n\
 \n\
-# Create auth-profiles.json with API key from environment variable\n\
-if [ -n "$OPENAI_API_KEY" ]; then\n\
-  echo "✅ Creating auth-profiles.json with OPENAI_API_KEY..."\n\
-  cat > /data/openclaw/agents/main/agent/auth-profiles.json <<EOF\n\
-{\n\
-  "version": 1,\n\
-  "profiles": {\n\
-    "openai:default": {\n\
-      "type": "api_key",\n\
-      "provider": "openai",\n\
-      "key": "$OPENAI_API_KEY"\n\
-    }\n\
-  },\n\
-  "lastGood": {\n\
-    "openai": "openai:default"\n\
-  }\n\
-}\n\
-EOF\n\
+# Create auth-profiles.json with OAuth tokens from environment variable\n\
+if [ -n "$AUTH_PROFILES_BASE64" ]; then\n\
+  echo "✅ Creating auth-profiles.json from AUTH_PROFILES_BASE64..."\n\
+  echo "$AUTH_PROFILES_BASE64" | base64 -d > /data/openclaw/agents/main/agent/auth-profiles.json\n\
   cp /data/openclaw/agents/main/agent/auth-profiles.json /root/.openclaw/agents/main/agent/auth-profiles.json\n\
   echo "✅ auth-profiles.json created in both locations"\n\
   ls -lh /data/openclaw/agents/main/agent/auth-profiles.json\n\
   echo "🔍 Checking JSON validity:"\n\
   cat /data/openclaw/agents/main/agent/auth-profiles.json | node -e "try { JSON.parse(require(\"fs\").readFileSync(0, \"utf-8\")); console.log(\"✅ Valid JSON\"); } catch(e) { console.log(\"❌ Invalid JSON:\", e.message); }"\n\
 else\n\
-  echo "❌ OPENAI_API_KEY not set - OpenClaw will fail to authenticate"\n\
+  echo "❌ AUTH_PROFILES_BASE64 not set - OpenClaw will fail to authenticate"\n\
 fi\n\
 \n\
 # Start health server in background\n\
