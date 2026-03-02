@@ -57,9 +57,6 @@
       ],
       "groupPolicy": "allowlist",
       "streamMode": "partial"
-    },
-    "whatsapp": {
-      "enabled": false
     }
   },
   "gateway": {
