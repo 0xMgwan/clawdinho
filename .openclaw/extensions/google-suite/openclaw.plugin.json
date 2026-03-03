@@ -1,0 +1,11 @@
+{
+  "id": "google-suite",
+  "name": "Google Suite (Gmail + Calendar)",
+  "description": "Direct Gmail + Google Calendar API tools using OAuth tokens stored in auth-profiles.json.",
+  "version": "0.1.0",
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {}
+  }
+}
