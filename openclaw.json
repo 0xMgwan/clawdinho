@@ -24,13 +24,6 @@
       "maxConcurrent": 4,
       "subagents": {
         "maxConcurrent": 8
-      },
-      "tools": {
-        "allow": [
-          "gmail_send",
-          "calendar_create_event",
-          "calendar_update_event"
-        ]
       }
     }
   },
