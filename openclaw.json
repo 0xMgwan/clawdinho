@@ -35,7 +35,7 @@
     "nativeSkills": "auto"
   },
   "cron": {
-    "enabled": false
+    "enabled": true
   },
   "hooks": {
     "internal": {
